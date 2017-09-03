@@ -12,10 +12,15 @@ class ViewController: NSViewController {
 
     @IBOutlet weak var outlineView: NSOutlineView!
     
+    @IBOutlet weak var animeTitle: NSTextField!
+    
+    @IBOutlet var animeNotesView: NSTextView!
     lazy var malAnimeEntries:[NSDictionary] = {
-        print(CFPreferencesCopyValue("malEntries" as CFString, "com.lucy.anime" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost))
+        //print(CFPreferencesCopyValue("malEntries" as CFString, "com.lucy.anime" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost))
         return CFPreferencesCopyValue("malEntries" as CFString, "com.lucy.anime" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as! [NSDictionary]
     }()
+    
+    //var selectedAnimeTitle:String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,7 +60,6 @@ extension ViewController: NSOutlineViewDelegate
 extension ViewController: NSOutlineViewDataSource
 {
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
-        print(item.debugDescription)
         if let entry = item as? NSDictionary{
             return entry["total_episodes"] as! NSInteger
         }
@@ -76,6 +80,20 @@ extension ViewController: NSOutlineViewDataSource
     }
     
     func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
+        
         return ((item as? NSDictionary) != nil)
     }
+    
+    func outlineViewSelectionDidChange(_ notification: Notification) {
+        if let item = outlineView.view(atColumn: 0, row: outlineView.selectedRow, makeIfNecessary: false) as? NSTableCellView{
+            if (Int((item.textField?.stringValue)!) == nil)
+            {
+                animeTitle.stringValue = (item.textField?.stringValue)!
+
+            }
+            
+        }
+       
+    }
+    
 }
