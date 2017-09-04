@@ -33,12 +33,16 @@ class ViewController: NSViewController {
         animeNotesView.textContainerInset = NSMakeSize(15, 15)
         animeNotesView.delegate = self
         
-        outlineView.selectRowIndexes(IndexSet(integer: 0), byExtendingSelection: false)
         
         NSApp.windows.first?.isOpaque = false
         NSApp.windows.first?.backgroundColor = NSColor(calibratedWhite: 40, alpha: 0.95)
         
 
+    }
+    
+    override func viewDidAppear() {
+        outlineView.selectRowIndexes(IndexSet(integer: 0), byExtendingSelection: false)
+        updateTextView()
     }
 
     override var representedObject: Any? {
@@ -98,7 +102,10 @@ extension ViewController: NSOutlineViewDataSource
     }
     
     func outlineViewSelectionDidChange(_ notification: Notification) {
-
+        updateTextView()
+    }
+    
+    func updateTextView(){
         if (outlineView.selectedRow < 0)
         {
             return
@@ -110,14 +117,14 @@ extension ViewController: NSOutlineViewDataSource
                 selectedAnimeTitle = (item.textField?.stringValue)!
                 animeTitle.stringValue = selectedAnimeTitle
                 selectedAnimeEpisode = ""
-                animeEpisode.stringValue = selectedAnimeEpisode
+                animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
                 
             } else {
                 if let parent = outlineView.parent(forItem: outlineItem) as? NSDictionary{
                     selectedAnimeTitle = parent["title"] as! String
                 }
                 selectedAnimeEpisode = (item.textField?.stringValue)!
-                animeEpisode.stringValue = selectedAnimeEpisode
+                animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
                 animeTitle.stringValue = selectedAnimeTitle
             }
             
