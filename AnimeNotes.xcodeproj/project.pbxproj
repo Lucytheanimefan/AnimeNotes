@@ -14,6 +14,7 @@
 		7C50497D1F5CA40700C55B28 /* AnimeNotesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C50497C1F5CA40700C55B28 /* AnimeNotesTests.swift */; };
 		7C50498E1F5CDCC600C55B28 /* Notes.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7C50498D1F5CDCC600C55B28 /* Notes.icns */; };
 		7C5049921F5CE53300C55B28 /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5049911F5CE53300C55B28 /* WindowController.swift */; };
+		7C5049941F5D80D100C55B28 /* Trash.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C5049931F5D80D100C55B28 /* Trash.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,7 @@
 		7C50498A1F5CC61800C55B28 /* AnimeNotes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AnimeNotes.entitlements; sourceTree = "<group>"; };
 		7C50498D1F5CDCC600C55B28 /* Notes.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Notes.icns; sourceTree = "<group>"; };
 		7C5049911F5CE53300C55B28 /* WindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
+		7C5049931F5D80D100C55B28 /* Trash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Trash.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 				7C50496A1F5CA40700C55B28 /* AppDelegate.swift */,
 				7C50496C1F5CA40700C55B28 /* ViewController.swift */,
 				7C50496E1F5CA40700C55B28 /* Assets.xcassets */,
+				7C5049931F5D80D100C55B28 /* Trash.png */,
 				7C5049701F5CA40700C55B28 /* Main.storyboard */,
 				7C5049731F5CA40700C55B28 /* Info.plist */,
 				7C5049911F5CE53300C55B28 /* WindowController.swift */,
@@ -203,6 +206,7 @@
 			files = (
 				7C50496F1F5CA40700C55B28 /* Assets.xcassets in Resources */,
 				7C5049721F5CA40700C55B28 /* Main.storyboard in Resources */,
+				7C5049941F5D80D100C55B28 /* Trash.png in Resources */,
 				7C50498E1F5CDCC600C55B28 /* Notes.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

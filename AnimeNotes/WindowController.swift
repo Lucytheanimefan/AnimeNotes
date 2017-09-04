@@ -21,6 +21,9 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     
     let tagTitles = ["Trash", "Masterpiece", "2Deep4Me", "WTF", "HypeTrain", "Filler"]
     
+    
+    let tagToImageDict = ["Trash":#imageLiteral(resourceName: "Trash")]
+    
     let DefaultFontSize : Int   = 14
     
     override func windowDidLoad() {
@@ -30,20 +33,33 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         self.toolBar.autosavesConfiguration = true
         self.toolBar.displayMode = .iconOnly
         
-        addTagTitles()
+        setupTag()
     }
     
-    func addTagTitles(){
+    func setupTag(){
         self.tagSelectorButton.addItem(withTitle: "")
         let item = self.tagSelectorButton.item(at: 0)
+        //item?.title = "Tag"
         item?.image = NSImage(named: "TagIcon")
-        self.tagSelectorButton.addItems(withTitles: tagTitles)
+        
+        self.tagSelectorButton.addItems(withTitles: Array(tagToImageDict.keys))
     }
     
     @IBAction func addTag(_ sender: NSButton) {
+//        NSImage * pic = [[NSImage alloc] initWithContentsOfFile:@"/Users/Anne/Desktop/Sample.png"];
+//        NSTextAttachmentCell *attachmentCell = [[NSTextAttachmentCell alloc] initImageCell:pic];
+//        NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
+//        [attachment setAttachmentCell: attachmentCell ];
+//        NSAttributedString *attributedString = [NSAttributedString  attributedStringWithAttachment: attachment];
+//        [[textView textStorage] appendAttributedString:attributedString];
+        
         let tagTitle = tagSelectorButton.titleOfSelectedItem
         if let vc = self.window?.contentViewController as? ViewController{
-            vc.animeNotesView.string = vc.animeNotesView.string! + tagTitle!
+            let attachmentCell = NSTextAttachmentCell(imageCell: tagToImageDict[tagTitle!])
+            let attachment = NSTextAttachment()
+            attachment.attachmentCell = attachmentCell
+            let attributedString = NSAttributedString(attachment: attachment)
+            vc.animeNotesView.textStorage?.append(attributedString)
         }
     }
     
