@@ -34,6 +34,10 @@ class ViewController: NSViewController {
         animeNotesView.delegate = self
         
         outlineView.selectRowIndexes(IndexSet(integer: 0), byExtendingSelection: false)
+        
+        NSApp.windows.first?.isOpaque = false
+        NSApp.windows.first?.backgroundColor = NSColor(calibratedWhite: 40, alpha: 0.95)
+        
 
     }
 
@@ -80,7 +84,7 @@ extension ViewController: NSOutlineViewDataSource
     func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
         if (item as? NSDictionary) != nil
         {
-            return String(index)
+            return String((index + 1))
         }
         else
         {
@@ -105,7 +109,8 @@ extension ViewController: NSOutlineViewDataSource
             {
                 selectedAnimeTitle = (item.textField?.stringValue)!
                 animeTitle.stringValue = selectedAnimeTitle
-                animeEpisode.stringValue = ""
+                selectedAnimeEpisode = ""
+                animeEpisode.stringValue = selectedAnimeEpisode
                 
             } else {
                 if let parent = outlineView.parent(forItem: outlineItem) as? NSDictionary{
@@ -117,7 +122,7 @@ extension ViewController: NSOutlineViewDataSource
             }
             
             // Update the text view notes
-            if (selectedAnimeEpisode != nil && selectedAnimeTitle != nil)
+            if (selectedAnimeEpisode != nil || selectedAnimeTitle != nil)
             {
                 if let notes = userDefaults.object(forKey: selectedAnimeTitle + selectedAnimeEpisode) as? String{
                     animeNotesView.string = notes
