@@ -14,18 +14,27 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var animeTitle: NSTextField!
     
+    @IBOutlet weak var animeEpisode: NSTextField!
+    
     @IBOutlet var animeNotesView: NSTextView!
+    
+    let userDefaults = UserDefaults.standard
+    
     lazy var malAnimeEntries:[NSDictionary] = {
-        //print(CFPreferencesCopyValue("malEntries" as CFString, "com.lucy.anime" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost))
         return CFPreferencesCopyValue("malEntries" as CFString, "com.lucy.anime" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as! [NSDictionary]
     }()
     
-    //var selectedAnimeTitle:String!
+    var selectedAnimeTitle:String!
+    var selectedAnimeEpisode:String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        outlineView.backgroundColor = NSColor.clear
+        animeNotesView.textContainerInset = NSMakeSize(15, 15)
+        animeNotesView.delegate = self
+        
+        outlineView.selectRowIndexes(IndexSet(integer: 0), byExtendingSelection: false)
 
-        // Do any additional setup after loading the view.
     }
 
     override var representedObject: Any? {
@@ -88,12 +97,42 @@ extension ViewController: NSOutlineViewDataSource
         if let item = outlineView.view(atColumn: 0, row: outlineView.selectedRow, makeIfNecessary: false) as? NSTableCellView{
             if (Int((item.textField?.stringValue)!) == nil)
             {
-                animeTitle.stringValue = (item.textField?.stringValue)!
-
+                selectedAnimeTitle = (item.textField?.stringValue)!
+                animeTitle.stringValue = selectedAnimeTitle
+                animeEpisode.stringValue = ""
+                
+            } else {
+                selectedAnimeEpisode = (item.textField?.stringValue)!
+                animeEpisode.stringValue = selectedAnimeEpisode
             }
             
+            // Update the text view notes
+            if (selectedAnimeEpisode != nil && selectedAnimeTitle != nil)
+            {
+                if let notes = userDefaults.object(forKey: selectedAnimeTitle + selectedAnimeEpisode) as? String{
+                    animeNotesView.string = notes
+                } else {
+                    animeNotesView.string = "No notes yet"
+                }
+            }
         }
-       
+        
     }
     
+}
+
+extension ViewController:NSTextViewDelegate
+{
+    override func controlTextDidChange(_ obj: Notification) {
+        userDefaults.set(animeNotesView.string, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+    }
+    
+    func textView(_ textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+        if (commandSelector == #selector(insertNewline(_:))) {
+            //Do something against ENTER key
+             userDefaults.set(animeNotesView.string, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+            return true
+        }
+        return false
+    }
 }
