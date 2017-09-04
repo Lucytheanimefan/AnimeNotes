@@ -116,7 +116,7 @@ extension ViewController: NSOutlineViewDataSource
             {
                 selectedAnimeTitle = (item.textField?.stringValue)!
                 animeTitle.stringValue = selectedAnimeTitle
-                selectedAnimeEpisode = ""
+                selectedAnimeEpisode = "-"
                 animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
                 
             } else {
@@ -134,7 +134,7 @@ extension ViewController: NSOutlineViewDataSource
                 if let notes = userDefaults.object(forKey: selectedAnimeTitle + selectedAnimeEpisode) as? String{
                     animeNotesView.string = notes
                 } else {
-                    animeNotesView.string = "No notes yet"
+                    animeNotesView.string = ""
                 }
             }
         }
@@ -150,11 +150,12 @@ extension ViewController:NSTextViewDelegate
     }
     
     func textView(_ textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
-        if (commandSelector == #selector(insertNewline(_:))) {
-            //Do something against ENTER key
-             userDefaults.set(animeNotesView.string, forKey: selectedAnimeTitle + selectedAnimeEpisode)
-            return true
-        }
+//        if (commandSelector == #selector(insertNewline(_:))) {
+//            animeNotesView.string = animeNotesView.string! + "\n"
+//        
+//        }
+        
+        userDefaults.set(animeNotesView.string, forKey: selectedAnimeTitle + selectedAnimeEpisode)
         return false
     }
 }
