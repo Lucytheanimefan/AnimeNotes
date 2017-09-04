@@ -34,6 +34,9 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     }
     
     func addTagTitles(){
+        self.tagSelectorButton.addItem(withTitle: "")
+        let item = self.tagSelectorButton.item(at: 0)
+        item?.image = NSImage(named: "TagIcon")
         self.tagSelectorButton.addItems(withTitles: tagTitles)
     }
     
