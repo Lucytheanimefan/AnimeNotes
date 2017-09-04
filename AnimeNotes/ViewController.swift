@@ -94,6 +94,12 @@ extension ViewController: NSOutlineViewDataSource
     }
     
     func outlineViewSelectionDidChange(_ notification: Notification) {
+
+        if (outlineView.selectedRow < 0)
+        {
+            return
+        }
+        let outlineItem = outlineView.item(atRow: outlineView.selectedRow)
         if let item = outlineView.view(atColumn: 0, row: outlineView.selectedRow, makeIfNecessary: false) as? NSTableCellView{
             if (Int((item.textField?.stringValue)!) == nil)
             {
@@ -102,8 +108,12 @@ extension ViewController: NSOutlineViewDataSource
                 animeEpisode.stringValue = ""
                 
             } else {
+                if let parent = outlineView.parent(forItem: outlineItem) as? NSDictionary{
+                    selectedAnimeTitle = parent["title"] as! String
+                }
                 selectedAnimeEpisode = (item.textField?.stringValue)!
                 animeEpisode.stringValue = selectedAnimeEpisode
+                animeTitle.stringValue = selectedAnimeTitle
             }
             
             // Update the text view notes
