@@ -13,11 +13,14 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     @IBOutlet weak var toolBar: NSToolbar!
     
     @IBOutlet var tagView: NSView!
+    @IBOutlet var searchView: NSView!
     
     @IBOutlet weak var tagSelectorButton: NSPopUpButton!
     
+    @IBOutlet weak var searchField: NSSearchField!
     
     let TagSelectorToolbarItemID = "tagSelector"
+    let SearchFieldToolbarItemID = "searchField"
     
     let tagTitles = ["Trash", "Masterpiece", "2Deep4Me", "WTF", "HypeTrain", "Filler"]
     
@@ -32,7 +35,6 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         self.toolBar.allowsUserCustomization = true
         self.toolBar.autosavesConfiguration = true
         self.toolBar.displayMode = .iconOnly
-        
         setupTag()
     }
     
@@ -44,6 +46,7 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         
         self.tagSelectorButton.addItems(withTitles: Array(tagToImageDict.keys))
     }
+    
     
     @IBAction func addTag(_ sender: NSButton) {
 //        NSImage * pic = [[NSImage alloc] initWithContentsOfFile:@"/Users/Anne/Desktop/Sample.png"];
@@ -59,8 +62,19 @@ class WindowController: NSWindowController, NSToolbarDelegate {
             let attachment = NSTextAttachment()
             attachment.attachmentCell = attachmentCell
             let attributedString = NSAttributedString(attachment: attachment)
-            vc.animeNotesView.textStorage?.append(attributedString)
+            vc.animeTagsView.textStorage?.append(attributedString)
         }
+    }
+    
+    // Action occurs on eneter
+    @IBAction func searchFieldChange(_ sender: NSSearchField) {
+        let searchString = sender.stringValue
+        
+        // Just search for tags for now
+        let predicate = NSPredicate(format: "tag contains[c] %@", searchString)
+        
+        let entries = UserDefaults.standard.dictionaryRepresentation()
+        print(entries)
     }
     
     
@@ -100,7 +114,6 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         toolbarItem.menuFormRepresentation = menuItem
         
         return toolbarItem
-
     }
     
     func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: String, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
@@ -111,20 +124,22 @@ class WindowController: NSWindowController, NSToolbarDelegate {
             // 1) Font style toolbar item.
             toolbarItem = customToolbarItem(itemForItemIdentifier: TagSelectorToolbarItemID, label: "Font Style", paletteLabel:"Tag Selector", toolTip: "Change your tag selector", target: self, itemContent: self.tagView, action: nil, menu: nil)!
         }
+        else if (itemIdentifier == SearchFieldToolbarItemID) {
+            toolbarItem = customToolbarItem(itemForItemIdentifier: TagSelectorToolbarItemID, label: "Search", paletteLabel:"Search field", toolTip: "Search by tag", target: self, itemContent: self.searchField, action: nil, menu: nil)!
+        }
         return toolbarItem
         
     }
     
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [String] {
-        return [TagSelectorToolbarItemID]
+        return [TagSelectorToolbarItemID, SearchFieldToolbarItemID]
     }
     
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [String] {
-        return [TagSelectorToolbarItemID,NSToolbarSpaceItemIdentifier,
+        return [TagSelectorToolbarItemID, SearchFieldToolbarItemID,NSToolbarSpaceItemIdentifier,
                 NSToolbarFlexibleSpaceItemIdentifier,
                 NSToolbarPrintItemIdentifier]
     }
     
-
-    
 }
+

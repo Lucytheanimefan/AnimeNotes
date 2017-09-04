@@ -18,10 +18,12 @@ class ViewController: NSViewController {
     
     @IBOutlet var animeNotesView: NSTextView!
     
+    @IBOutlet var animeTagsView: NSTextView!
+    
     let userDefaults = UserDefaults.standard
     
-    lazy var malAnimeEntries:[NSDictionary] = {
-        return CFPreferencesCopyValue("malEntries" as CFString, "com.lucy.anime" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as! [NSDictionary]
+    lazy var malAnimeEntries:[NSDictionary]? = {
+        return CFPreferencesCopyValue("malEntries" as CFString, "com.lucy.anime" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as? [NSDictionary]
     }()
     
     var selectedAnimeTitle:String!
@@ -32,12 +34,17 @@ class ViewController: NSViewController {
         super.viewDidLoad()
         outlineView.backgroundColor = NSColor.clear
         animeNotesView.textContainerInset = NSMakeSize(15, 15)
+        animeTagsView.textContainerInset = NSMakeSize(3, 3)
         animeNotesView.delegate = self
+        animeTagsView.delegate = self
         
         
         NSApp.windows.first?.isOpaque = false
         NSApp.windows.first?.backgroundColor = NSColor(calibratedWhite: 40, alpha: 0.95)
         
+        if let bundle = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundle)
+        }
 
     }
     
@@ -81,9 +88,10 @@ extension ViewController: NSOutlineViewDataSource
         if let entry = item as? NSDictionary{
             return entry["total_episodes"] as! NSInteger
         }
-        else{
-            return self.malAnimeEntries.count
+        else if (self.malAnimeEntries != nil){
+            return self.malAnimeEntries!.count
         }
+        return 0
     }
     
     func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
@@ -91,10 +99,11 @@ extension ViewController: NSOutlineViewDataSource
         {
             return String((index + 1))
         }
-        else
+        else if (self.malAnimeEntries != nil)
         {
-            return self.malAnimeEntries[index]
+            return self.malAnimeEntries![index]
         }
+        return "Error - nothing"
     }
     
     func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
@@ -132,10 +141,21 @@ extension ViewController: NSOutlineViewDataSource
             // Update the text view notes
             if (selectedAnimeEpisode != nil || selectedAnimeTitle != nil)
             {
-                if let notes = userDefaults.object(forKey: selectedAnimeTitle + selectedAnimeEpisode) as? String{
-                    animeNotesView.string = notes
+                if let decoded  = userDefaults.object(forKey: selectedAnimeTitle + selectedAnimeEpisode) as? Data{
+                    if let notes = NSKeyedUnarchiver.unarchiveObject(with: decoded) as? [String:Any] {
+                        if let note = notes["notes"] as? String{
+                            animeNotesView.string = note
+                        }
+                        if let tagsString = notes["tags"] as? NSAttributedString{
+                            animeTagsView.textStorage?.append(tagsString)
+                        }
+                    } else {
+                        animeNotesView.string = ""
+                        animeTagsView.string = ""
+                    }
                 } else {
                     animeNotesView.string = ""
+                    animeTagsView.string = ""
                 }
             }
         }
@@ -147,7 +167,11 @@ extension ViewController: NSOutlineViewDataSource
 extension ViewController:NSTextViewDelegate
 {
     override func controlTextDidChange(_ obj: Notification) {
-        userDefaults.set(animeNotesView.string, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+        let data = ["notes":animeNotesView.string!, "tags":animeTagsView.attributedString()] as [String : Any]
+        let encodedData = NSKeyedArchiver.archivedData(withRootObject: data)
+        
+        userDefaults.set(/*animeNotesView.string*/encodedData, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+        
     }
     
     func textView(_ textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
@@ -156,7 +180,16 @@ extension ViewController:NSTextViewDelegate
 //        
 //        }
         
-        userDefaults.set(animeNotesView.string, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+        //userDefaults.set(animeNotesView.string, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+        
+        let data = ["notes":animeNotesView.string!, "tags":animeTagsView.attributedString()] as [String : Any]
+        
+        let encodedData = NSKeyedArchiver.archivedData(withRootObject: data)
+        
+        
+        userDefaults.set(/*animeNotesView.string*/encodedData, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+        
         return false
     }
 }
+
