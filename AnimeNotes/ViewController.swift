@@ -27,6 +27,7 @@ class ViewController: NSViewController {
     var selectedAnimeTitle:String!
     var selectedAnimeEpisode:String!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         outlineView.backgroundColor = NSColor.clear

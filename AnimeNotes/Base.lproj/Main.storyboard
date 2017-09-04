@@ -680,6 +680,7 @@
                         </toolbar>
                     </window>
                     <connections>
+                        <outlet property="tagSelectorButton" destination="3Jc-Gf-HIX" id="Z5S-NN-V3j"/>
                         <outlet property="tagView" destination="Asq-rb-AT8" id="TLh-ga-WS2"/>
                         <outlet property="toolBar" destination="siZ-iX-fyt" id="7pP-AX-bca"/>
                         <segue destination="XfG-lQ-9wD" kind="relationship" relationship="window.shadowedContentViewController" id="cq2-FE-JQM"/>
@@ -693,16 +694,10 @@
                         <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Jc-Gf-HIX">
                             <rect key="frame" x="18" y="11" width="98" height="26"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="OIw-Kv-58W" id="HJc-bZ-X7j">
+                            <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="HJc-bZ-X7j">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="menu"/>
-                                <menu key="menu" id="aG7-Hh-8XF">
-                                    <items>
-                                        <menuItem title="Item 1" state="on" id="OIw-Kv-58W"/>
-                                        <menuItem title="Item 2" id="tsS-Hu-jhu"/>
-                                        <menuItem title="Item 3" id="oBu-dW-cti"/>
-                                    </items>
-                                </menu>
+                                <menu key="menu" id="aG7-Hh-8XF"/>
                             </popUpButtonCell>
                         </popUpButton>
                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H7G-Kx-qrt">
@@ -712,6 +707,9 @@
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
+                            <connections>
+                                <action selector="addTag:" target="B8D-0N-5wS" id="gbf-Sk-FSy"/>
+                            </connections>
                         </button>
                     </subviews>
                 </customView>

@@ -14,7 +14,12 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     
     @IBOutlet var tagView: NSView!
     
+    @IBOutlet weak var tagSelectorButton: NSPopUpButton!
+    
+    
     let TagSelectorToolbarItemID = "tagSelector"
+    
+    let tagTitles = ["Trash", "Masterpiece", "2Deep4Me", "WTF", "HypeTrain", "Filler"]
     
     let DefaultFontSize : Int   = 14
     
@@ -25,10 +30,22 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         self.toolBar.autosavesConfiguration = true
         self.toolBar.displayMode = .iconOnly
         
-        
-        
+        addTagTitles()
     }
     
+    func addTagTitles(){
+        self.tagSelectorButton.addItems(withTitles: tagTitles)
+    }
+    
+    @IBAction func addTag(_ sender: NSButton) {
+        let tagTitle = tagSelectorButton.titleOfSelectedItem
+        if let vc = self.window?.contentViewController as? ViewController{
+            vc.animeNotesView.string = vc.animeNotesView.string! + tagTitle!
+        }
+    }
+    
+    
+    // MARK: ToolbarDelegate
      func customToolbarItem(itemForItemIdentifier itemIdentifier: String, label: String, paletteLabel: String, toolTip: String, target: AnyObject, itemContent: AnyObject, action: Selector?, menu: NSMenu?) -> NSToolbarItem? {
         
         let toolbarItem = NSToolbarItem(itemIdentifier: itemIdentifier)
