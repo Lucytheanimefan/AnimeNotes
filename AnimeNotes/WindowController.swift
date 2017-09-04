@@ -48,14 +48,7 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     }
     
     
-    @IBAction func addTag(_ sender: NSButton) {
-//        NSImage * pic = [[NSImage alloc] initWithContentsOfFile:@"/Users/Anne/Desktop/Sample.png"];
-//        NSTextAttachmentCell *attachmentCell = [[NSTextAttachmentCell alloc] initImageCell:pic];
-//        NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
-//        [attachment setAttachmentCell: attachmentCell ];
-//        NSAttributedString *attributedString = [NSAttributedString  attributedStringWithAttachment: attachment];
-//        [[textView textStorage] appendAttributedString:attributedString];
-        
+    @IBAction func addTag(_ sender: NSButton) {       
         let tagTitle = tagSelectorButton.titleOfSelectedItem
         if let vc = self.window?.contentViewController as? ViewController{
             let attachmentCell = NSTextAttachmentCell(imageCell: tagToImageDict[tagTitle!])
@@ -66,15 +59,28 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         }
     }
     
-    // Action occurs on eneter
+    // Action occurs on enter
     @IBAction func searchFieldChange(_ sender: NSSearchField) {
         let searchString = sender.stringValue
         
         // Just search for tags for now
-        let predicate = NSPredicate(format: "tag contains[c] %@", searchString)
-        
+        let predicate = NSPredicate(format: "tags ==[c] AnimeNotesEntry")
         let entries = UserDefaults.standard.dictionaryRepresentation()
         print(entries)
+        
+        
+        let animeEntries = entries.filter { (tuple: (key: String, value: Any)) -> Bool in
+            if let val = tuple.value as? [String:Any]
+            {
+                if let type = val["type"] as? String{
+                    return (type=="AnimeNotesEntry")
+                }
+            }
+            return false
+        }
+        print("anime entries: ")
+        print(animeEntries)
+        
     }
     
     
@@ -125,7 +131,7 @@ class WindowController: NSWindowController, NSToolbarDelegate {
             toolbarItem = customToolbarItem(itemForItemIdentifier: TagSelectorToolbarItemID, label: "Font Style", paletteLabel:"Tag Selector", toolTip: "Change your tag selector", target: self, itemContent: self.tagView, action: nil, menu: nil)!
         }
         else if (itemIdentifier == SearchFieldToolbarItemID) {
-            toolbarItem = customToolbarItem(itemForItemIdentifier: TagSelectorToolbarItemID, label: "Search", paletteLabel:"Search field", toolTip: "Search by tag", target: self, itemContent: self.searchField, action: nil, menu: nil)!
+            toolbarItem = customToolbarItem(itemForItemIdentifier: TagSelectorToolbarItemID, label: "Search", paletteLabel:"Search field", toolTip: "Search by tag", target: self, itemContent: self.searchView, action: nil, menu: nil)!
         }
         return toolbarItem
         

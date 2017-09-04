@@ -26,6 +26,7 @@ class ViewController: NSViewController {
         return CFPreferencesCopyValue("malEntries" as CFString, "com.lucy.anime" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as? [NSDictionary]
     }()
     
+    
     var selectedAnimeTitle:String!
     var selectedAnimeEpisode:String!
     
@@ -42,9 +43,11 @@ class ViewController: NSViewController {
         NSApp.windows.first?.isOpaque = false
         NSApp.windows.first?.backgroundColor = NSColor(calibratedWhite: 40, alpha: 0.95)
         
-        if let bundle = Bundle.main.bundleIdentifier {
-            UserDefaults.standard.removePersistentDomain(forName: bundle)
-        }
+        
+        // Just for debugging, clear user defaults
+//        if let bundle = Bundle.main.bundleIdentifier {
+//            UserDefaults.standard.removePersistentDomain(forName: bundle)
+//        }
 
     }
     
@@ -167,27 +170,20 @@ extension ViewController: NSOutlineViewDataSource
 extension ViewController:NSTextViewDelegate
 {
     override func controlTextDidChange(_ obj: Notification) {
-        let data = ["notes":animeNotesView.string!, "tags":animeTagsView.attributedString()] as [String : Any]
-        let encodedData = NSKeyedArchiver.archivedData(withRootObject: data)
+        let data = ["type":"AnimeNotesEntry", "notes":animeNotesView.string!, "tags":animeTagsView.attributedString().string] as [String : Any]
+        //let encodedData = NSKeyedArchiver.archivedData(withRootObject: data)
         
-        userDefaults.set(/*animeNotesView.string*/encodedData, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+        userDefaults.set(data/*animeNotesView.string/encodedData*/, forKey: selectedAnimeTitle + selectedAnimeEpisode)
         
     }
     
     func textView(_ textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
-//        if (commandSelector == #selector(insertNewline(_:))) {
-//            animeNotesView.string = animeNotesView.string! + "\n"
-//        
-//        }
+        let data = ["type":"AnimeNotesEntry", "notes":animeNotesView.string!, "tags":animeTagsView.attributedString().string] as [String : Any]
         
-        //userDefaults.set(animeNotesView.string, forKey: selectedAnimeTitle + selectedAnimeEpisode)
-        
-        let data = ["notes":animeNotesView.string!, "tags":animeTagsView.attributedString()] as [String : Any]
-        
-        let encodedData = NSKeyedArchiver.archivedData(withRootObject: data)
+        //let encodedData = NSKeyedArchiver.archivedData(withRootObject: data)
         
         
-        userDefaults.set(/*animeNotesView.string*/encodedData, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+        userDefaults.set(data/*animeNotesView.string/encodedData*/, forKey: selectedAnimeTitle + selectedAnimeEpisode)
         
         return false
     }
