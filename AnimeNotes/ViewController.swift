@@ -70,7 +70,7 @@ class ViewController: NSViewController {
 extension ViewController: NSOutlineViewDelegate
 {
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
-        var cellView: NSTableCellView!
+        var cellView: NSView!
         if (tableColumn?.identifier == "AnimeEntryColumn")
         {
             cellView = outlineView.make(withIdentifier: "AnimeEntry", owner: nil) as! NSTableCellView
@@ -83,26 +83,46 @@ extension ViewController: NSOutlineViewDelegate
                         let formattedTitle = title.substring(to: title.index(before: title.endIndex))
                         selectedAnimeTitle = formattedTitle
                         selectedAnimeEpisode = String(describing: ep!)
-                        cellView.textField?.stringValue = selectedAnimeTitle + " Ep " + selectedAnimeEpisode
+                        cellView = customCellView(title: selectedAnimeTitle, subtitle: "Episode: " + selectedAnimeEpisode)
+                        //cellView.textField?.stringValue = selectedAnimeTitle + " Ep " + selectedAnimeEpisode
                     }
                 }
                 else
                 {
-                    cellView.textField?.stringValue = "Filtered anime no title"
+                    (cellView as! NSTableCellView).textField?.stringValue = "Filtered anime no title"
                 }
             }
             else
             {
                 if let entry = item as? NSDictionary{
-                    cellView.textField?.stringValue = entry["title"] as! String
+                    (cellView as! NSTableCellView).textField?.stringValue = entry["title"] as! String
                 }
                 else if let entry = item as? String
                 {
-                    cellView.textField?.stringValue = entry
+                    (cellView as! NSTableCellView).textField?.stringValue = entry
                 }
             }
         }
         return cellView
+    }
+    
+    func customCellView(title:String, subtitle:String) -> NSView? {
+        let view = NSView()
+        let titleField = NSTextField(frame: NSRect(x: 0, y: 15, width: 148, height: 20))
+        titleField.stringValue = title
+        titleField.isBordered = false
+        titleField.backgroundColor = .clear
+        titleField.isEditable = false
+        titleField.font = NSFont.systemFont(ofSize: 12)
+        view.addSubview(titleField)
+        let subtitleField = NSTextField(frame:  NSRect(x: 0, y: 0, width: 148, height: 17))
+        subtitleField.isBordered = false
+        subtitleField.stringValue = subtitle
+        subtitleField.backgroundColor = .clear
+        subtitleField.isEditable = false
+        subtitleField.font = NSFont.systemFont(ofSize: 8)
+        view.addSubview(subtitleField)
+        return view
     }
 }
 
@@ -164,6 +184,23 @@ extension ViewController: NSOutlineViewDataSource
         }
     }
     
+    func outlineView(_ outlineView: NSOutlineView, heightOfRowByItem item: Any) -> CGFloat {
+        if (filterMode)
+        {
+            return 40
+        }
+        else
+        {
+            if (item as? NSDictionary) != nil
+            {
+                return 20
+            }
+            else
+            {
+                return 20
+            }
+        }
+    }
     
     func updateFilteredTextView(){
         //if let item = outlineView.view(atColumn: 0, row: outlineView.selectedRow, makeIfNecessary: false) as? NSTableCellView{
