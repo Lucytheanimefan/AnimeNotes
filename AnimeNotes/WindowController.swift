@@ -62,6 +62,11 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     // Action occurs on enter
     @IBAction func searchFieldChange(_ sender: NSSearchField) {
         let searchString = sender.stringValue
+        let vc = self.window?.contentViewController as! ViewController
+        if (searchString.characters.count == 0){
+            vc.filterMode = false
+            vc.outlineView.reloadData()
+        }
         
         let entries = UserDefaults.standard.dictionaryRepresentation()
         
@@ -97,6 +102,11 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         
         print("Filtered entries!")
         print(filteredEntries)
+        if (filteredEntries.count>0){
+            vc.filterMode = true
+            vc.filteredEntries = filteredEntries
+            vc.outlineView.reloadData()
+        }
     }
     
     

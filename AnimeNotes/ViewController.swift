@@ -30,6 +30,9 @@ class ViewController: NSViewController {
     var selectedAnimeTitle:String!
     var selectedAnimeEpisode:String!
     
+    var filterMode:Bool! = false
+    var filteredEntries:[Any]!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,7 +41,6 @@ class ViewController: NSViewController {
         animeTagsView.textContainerInset = NSMakeSize(3, 3)
         animeNotesView.delegate = self
         animeTagsView.delegate = self
-        
         
         NSApp.windows.first?.isOpaque = false
         NSApp.windows.first?.backgroundColor = NSColor(calibratedWhite: 40, alpha: 0.95)
@@ -72,14 +74,30 @@ extension ViewController: NSOutlineViewDelegate
         if (tableColumn?.identifier == "AnimeEntryColumn")
         {
             cellView = outlineView.make(withIdentifier: "AnimeEntry", owner: nil) as! NSTableCellView
-            if let entry = item as? NSDictionary{
-                cellView.textField?.stringValue = entry["title"] as! String
-            }
-            else if let entry = item as? String
+            if (filterMode)
             {
-                cellView.textField?.stringValue = entry
+                if let entry = item as? (Any, Any){
+                    print(entry)
+                    if let title = entry.0 as? String{
+                        print(title)
+                        cellView.textField?.stringValue = title
+                    }
+                }
+                else
+                {
+                    cellView.textField?.stringValue = "Filtered anime no title"
+                }
             }
-            
+            else
+            {
+                if let entry = item as? NSDictionary{
+                    cellView.textField?.stringValue = entry["title"] as! String
+                }
+                else if let entry = item as? String
+                {
+                    cellView.textField?.stringValue = entry
+                }
+            }
         }
         return cellView
     }
@@ -88,34 +106,59 @@ extension ViewController: NSOutlineViewDelegate
 extension ViewController: NSOutlineViewDataSource
 {
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
-        if let entry = item as? NSDictionary{
-            return entry["total_episodes"] as! NSInteger
+        var children:Int! = 0
+        if (filterMode){
+            // No children
+            children = self.filteredEntries.count
         }
-        else if (self.malAnimeEntries != nil){
-            return self.malAnimeEntries!.count
+        else
+        {
+            if let entry = item as? NSDictionary{
+                children = entry["total_episodes"] as! NSInteger
+            }
+            else if (self.malAnimeEntries != nil){
+                children = self.malAnimeEntries!.count
+            }
         }
-        return 0
+        return children
     }
     
     func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
-        if (item as? NSDictionary) != nil
+        if (filterMode)
         {
-            return String((index + 1))
+            return self.filteredEntries[index]
         }
-        else if (self.malAnimeEntries != nil)
+        else
         {
-            return self.malAnimeEntries![index]
+            if (item as? NSDictionary) != nil
+            {
+                return String((index + 1))
+            }
+            else if (self.malAnimeEntries != nil)
+            {
+                return self.malAnimeEntries![index]
+            }
         }
         return "Error - nothing"
     }
     
     func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
         
-        return ((item as? NSDictionary) != nil)
+        if (filterMode) {return false}
+        else{
+            return ((item as? NSDictionary) != nil)
+        }
     }
     
     func outlineViewSelectionDidChange(_ notification: Notification) {
-        updateTextView()
+        if (filterMode)
+        {
+            
+        }
+        else
+        {
+            updateTextView()
+        }
     }
     
     func updateTextView(){
@@ -166,19 +209,15 @@ extension ViewController:NSTextViewDelegate
 {
     override func controlTextDidChange(_ obj: Notification) {
         let data = ["type":"AnimeNotesEntry", "notes":animeNotesView.string!, "tags":animeTagsView.attributedString().string] as [String : Any]
-        //let encodedData = NSKeyedArchiver.archivedData(withRootObject: data)
-        
-        userDefaults.set(data/*animeNotesView.string/encodedData*/, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+
+        userDefaults.set(data, forKey: selectedAnimeTitle + selectedAnimeEpisode)
         
     }
     
     func textView(_ textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
         let data = ["type":"AnimeNotesEntry", "notes":animeNotesView.string!, "tags":animeTagsView.attributedString().string] as [String : Any]
         
-        //let encodedData = NSKeyedArchiver.archivedData(withRootObject: data)
-        
-        
-        userDefaults.set(data/*animeNotesView.string/encodedData*/, forKey: selectedAnimeTitle + selectedAnimeEpisode)
+        userDefaults.set(data, forKey: selectedAnimeTitle + selectedAnimeEpisode)
         
         return false
     }
