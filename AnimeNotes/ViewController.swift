@@ -9,7 +9,7 @@
 import Cocoa
 
 class ViewController: NSViewController {
-
+    
     @IBOutlet weak var outlineView: NSOutlineView!
     
     @IBOutlet weak var animeTitle: NSTextField!
@@ -47,24 +47,24 @@ class ViewController: NSViewController {
         
         
         // Just for debugging, clear user defaults
-//        if let bundle = Bundle.main.bundleIdentifier {
-//            UserDefaults.standard.removePersistentDomain(forName: bundle)
-//        }
-
+        //        if let bundle = Bundle.main.bundleIdentifier {
+        //            UserDefaults.standard.removePersistentDomain(forName: bundle)
+        //        }
+        
     }
     
     override func viewDidAppear() {
         outlineView.selectRowIndexes(IndexSet(integer: 0), byExtendingSelection: false)
         updateTextView()
     }
-
+    
     override var representedObject: Any? {
         didSet {
-        // Update the view, if already loaded.
+            // Update the view, if already loaded.
         }
     }
-
-
+    
+    
 }
 
 extension ViewController: NSOutlineViewDelegate
@@ -79,8 +79,11 @@ extension ViewController: NSOutlineViewDelegate
                 if let entry = item as? (Any, Any){
                     print(entry)
                     if let title = entry.0 as? String{
-                        print(title)
-                        cellView.textField?.stringValue = title
+                        let ep = title.characters.last
+                        let formattedTitle = title.substring(to: title.index(before: title.endIndex))
+                        selectedAnimeTitle = formattedTitle
+                        selectedAnimeEpisode = String(describing: ep!)
+                        cellView.textField?.stringValue = selectedAnimeTitle + " Ep " + selectedAnimeEpisode
                     }
                 }
                 else
@@ -153,12 +156,46 @@ extension ViewController: NSOutlineViewDataSource
     func outlineViewSelectionDidChange(_ notification: Notification) {
         if (filterMode)
         {
-            
+            updateFilteredTextView()
         }
         else
         {
             updateTextView()
         }
+    }
+    
+    
+    func updateFilteredTextView(){
+        //if let item = outlineView.view(atColumn: 0, row: outlineView.selectedRow, makeIfNecessary: false) as? NSTableCellView{
+        
+        let rawTitle = selectedAnimeTitle + selectedAnimeEpisode
+        
+        animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
+        animeTitle.stringValue = selectedAnimeTitle
+        let entryForTitle = self.filteredEntries.filter { (object) -> Bool in
+            //print(object)
+            if let item = object as? (Any, Any){
+                //purint(item)
+                if let title = item.0 as? String{
+                    print(title)
+                    return (title == rawTitle)
+                }
+            }
+            return false
+        }
+        
+        if (entryForTitle.count > 0){
+            if let anime = entryForTitle[0] as? (Any, Any){
+                if let entry = anime.1 as? [String:Any]{
+                    if let notes = entry["notes"] as? String{
+                        animeNotesView.string = notes
+                    }
+                }
+                
+            }
+        }
+        
+        //}
     }
     
     func updateTextView(){
@@ -209,7 +246,7 @@ extension ViewController:NSTextViewDelegate
 {
     override func controlTextDidChange(_ obj: Notification) {
         let data = ["type":"AnimeNotesEntry", "notes":animeNotesView.string!, "tags":animeTagsView.attributedString().string] as [String : Any]
-
+        
         userDefaults.set(data, forKey: selectedAnimeTitle + selectedAnimeEpisode)
         
     }

@@ -66,6 +66,7 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         if (searchString.characters.count == 0){
             vc.filterMode = false
             vc.outlineView.reloadData()
+            vc.animeNotesView.string = ""
         }
         
         let entries = UserDefaults.standard.dictionaryRepresentation()
