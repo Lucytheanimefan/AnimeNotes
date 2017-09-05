@@ -63,24 +63,40 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     @IBAction func searchFieldChange(_ sender: NSSearchField) {
         let searchString = sender.stringValue
         
-        // Just search for tags for now
-        let predicate = NSPredicate(format: "tags ==[c] AnimeNotesEntry")
         let entries = UserDefaults.standard.dictionaryRepresentation()
-        print(entries)
         
         
-        let animeEntries = entries.filter { (tuple: (key: String, value: Any)) -> Bool in
+        var animeEntries:[Any] = entries.filter { (tuple: (key: String, value: Any)) -> Bool in
             if let val = tuple.value as? [String:Any]
             {
                 if let type = val["type"] as? String{
-                    return (type=="AnimeNotesEntry")
+                    return (type == "AnimeNotesEntry")
                 }
             }
             return false
         }
-        print("anime entries: ")
-        print(animeEntries)
         
+        print(animeEntries)
+        // Just search for tags for now
+        let filteredEntries = animeEntries.filter { (object) -> Bool in
+            //print(object)
+            if let item = object as? (Any, Any){
+                //print(item)
+                if let value = item.1 as? [String:Any]{
+                    //print(value)
+                    if let tags = value["tags"] as? String{
+                        if (tags.contains(searchString)){ return true }
+                    }
+                    if let notes = value["notes"] as? String{
+                        if (notes.contains(searchString)){ return true }
+                    }
+                }
+            }
+            return false
+        }
+        
+        print("Filtered entries!")
+        print(filteredEntries)
     }
     
     
@@ -131,7 +147,7 @@ class WindowController: NSWindowController, NSToolbarDelegate {
             toolbarItem = customToolbarItem(itemForItemIdentifier: TagSelectorToolbarItemID, label: "Font Style", paletteLabel:"Tag Selector", toolTip: "Change your tag selector", target: self, itemContent: self.tagView, action: nil, menu: nil)!
         }
         else if (itemIdentifier == SearchFieldToolbarItemID) {
-            toolbarItem = customToolbarItem(itemForItemIdentifier: TagSelectorToolbarItemID, label: "Search", paletteLabel:"Search field", toolTip: "Search by tag", target: self, itemContent: self.searchView, action: nil, menu: nil)!
+            toolbarItem = customToolbarItem(itemForItemIdentifier: SearchFieldToolbarItemID, label: "Search", paletteLabel:"Search field", toolTip: "Search by tag", target: self, itemContent: self.searchView, action: nil, menu: nil)!
         }
         return toolbarItem
         

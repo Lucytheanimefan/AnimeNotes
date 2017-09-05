@@ -144,17 +144,12 @@ extension ViewController: NSOutlineViewDataSource
             // Update the text view notes
             if (selectedAnimeEpisode != nil || selectedAnimeTitle != nil)
             {
-                if let decoded  = userDefaults.object(forKey: selectedAnimeTitle + selectedAnimeEpisode) as? Data{
-                    if let notes = NSKeyedUnarchiver.unarchiveObject(with: decoded) as? [String:Any] {
-                        if let note = notes["notes"] as? String{
-                            animeNotesView.string = note
-                        }
-                        if let tagsString = notes["tags"] as? NSAttributedString{
-                            animeTagsView.textStorage?.append(tagsString)
-                        }
-                    } else {
-                        animeNotesView.string = ""
-                        animeTagsView.string = ""
+                if let notes  = userDefaults.object(forKey: selectedAnimeTitle + selectedAnimeEpisode) as? [String:Any]{
+                    if let note = notes["notes"] as? String{
+                        animeNotesView.string = note
+                    }
+                    if let tagsString = notes["tags"] as? String{
+                        animeTagsView.textStorage?.append(NSAttributedString(string: tagsString))
                     }
                 } else {
                     animeNotesView.string = ""
