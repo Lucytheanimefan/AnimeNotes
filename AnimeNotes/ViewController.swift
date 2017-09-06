@@ -45,12 +45,6 @@ class ViewController: NSViewController {
         NSApp.windows.first?.isOpaque = false
         NSApp.windows.first?.backgroundColor = NSColor(calibratedWhite: 40, alpha: 0.95)
         
-        
-        // Just for debugging, clear user defaults
-        //        if let bundle = Bundle.main.bundleIdentifier {
-        //            UserDefaults.standard.removePersistentDomain(forName: bundle)
-        //        }
-        
     }
     
     override func viewDidAppear() {
@@ -64,6 +58,18 @@ class ViewController: NSViewController {
         }
     }
     
+    // title: the raw title with the ep # at the end
+    func formatTitleEpisodeFromFilteredEntry(title:String, setFields:Bool = false){
+        let ep = title.characters.last
+        let formattedTitle = title.substring(to: title.index(before: title.endIndex))
+        selectedAnimeTitle = formattedTitle
+        selectedAnimeEpisode = String(describing: ep!)
+        if (setFields)
+        {
+            animeTitle.stringValue = selectedAnimeTitle
+            animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
+        }
+    }
     
 }
 
@@ -79,12 +85,8 @@ extension ViewController: NSOutlineViewDelegate
                 if let entry = item as? (Any, Any){
                     print(entry)
                     if let title = entry.0 as? String{
-                        let ep = title.characters.last
-                        let formattedTitle = title.substring(to: title.index(before: title.endIndex))
-                        selectedAnimeTitle = formattedTitle
-                        selectedAnimeEpisode = String(describing: ep!)
+                        formatTitleEpisodeFromFilteredEntry(title: title)
                         cellView = customCellView(title: selectedAnimeTitle, subtitle: "Episode: " + selectedAnimeEpisode)
-                        //cellView.textField?.stringValue = selectedAnimeTitle + " Ep " + selectedAnimeEpisode
                     }
                 }
                 else
@@ -203,36 +205,22 @@ extension ViewController: NSOutlineViewDataSource
     }
     
     func updateFilteredTextView(){
-        //if let item = outlineView.view(atColumn: 0, row: outlineView.selectedRow, makeIfNecessary: false) as? NSTableCellView{
-        
-        let rawTitle = selectedAnimeTitle + selectedAnimeEpisode
-        
-        animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
-        animeTitle.stringValue = selectedAnimeTitle
-        let entryForTitle = self.filteredEntries.filter { (object) -> Bool in
-            //print(object)
-            if let item = object as? (Any, Any){
-                //purint(item)
-                if let title = item.0 as? String{
-                    print(title)
-                    return (title == rawTitle)
+        let selectedIndex = outlineView.selectedRow
+
+        let entryForTitle = self.filteredEntries[selectedIndex]
+        if let item = entryForTitle as? (Any, Any){
+            //purint(item)
+            if let title = item.0 as? String{
+                formatTitleEpisodeFromFilteredEntry(title: title, setFields: true)
+            }
+            if let entry = item.1 as? [String:Any]{
+                if let notes = entry["notes"] as? String{
+                    animeNotesView.string = notes
                 }
             }
-            return false
+
         }
-        
-        if (entryForTitle.count > 0){
-            if let anime = entryForTitle[0] as? (Any, Any){
-                if let entry = anime.1 as? [String:Any]{
-                    if let notes = entry["notes"] as? String{
-                        animeNotesView.string = notes
-                    }
-                }
-                
-            }
-        }
-        
-        //}
+
     }
     
     func updateTextView(){
