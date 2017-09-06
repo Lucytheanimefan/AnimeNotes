@@ -265,8 +265,10 @@ extension ViewController: NSOutlineViewDataSource
                     if let note = notes["notes"] as? String{
                         animeNotesView.string = note
                     }
-                    if let tagsString = notes["tags"] as? String{
-                        animeTagsView.textStorage?.append(NSAttributedString(string: tagsString))
+                    if let tagData = notes["tags"] as? Data{
+                        if let tagsString = NSKeyedUnarchiver.unarchiveObject(with: tagData) as? NSAttributedString{
+                            animeTagsView.textStorage?.append(tagsString)
+                        }
                     }
                 } else {
                     animeNotesView.string = ""
@@ -289,7 +291,9 @@ extension ViewController:NSTextViewDelegate
     }
     
     func textView(_ textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
-        let data = ["type":"AnimeNotesEntry", "notes":animeNotesView.string!, "tags":animeTagsView.attributedString().string] as [String : Any]
+    
+        let tagData = NSKeyedArchiver.archivedData(withRootObject: animeTagsView.attributedString())
+        let data = ["type":"AnimeNotesEntry", "notes":animeNotesView.string!, "tags":tagData] as [String : Any]
         
         userDefaults.set(data, forKey: selectedAnimeTitle + selectedAnimeEpisode)
         
