@@ -45,6 +45,10 @@ class ViewController: NSViewController {
         NSApp.windows.first?.isOpaque = false
         NSApp.windows.first?.backgroundColor = NSColor(calibratedWhite: 40, alpha: 0.95)
         
+        if let bundle = Bundle.main.bundleIdentifier {
+            userDefaults.removePersistentDomain(forName: bundle)
+        }
+        
     }
     
     override func viewDidAppear() {
@@ -106,6 +110,13 @@ extension ViewController: NSOutlineViewDelegate
             }
         }
         return cellView
+    }
+    
+    func setTextFieldSettings(field:NSTextField)->NSTextField{
+        field.isBordered = false
+        field.backgroundColor = .clear
+        field.isEditable = false
+        return field
     }
     
     func customCellView(title:String, subtitle:String) -> NSView? {
@@ -205,6 +216,7 @@ extension ViewController: NSOutlineViewDataSource
     }
     
     func updateFilteredTextView(){
+        clearAnimeNote()
         let selectedIndex = outlineView.selectedRow
 
         let entryForTitle = self.filteredEntries[selectedIndex]
@@ -218,7 +230,7 @@ extension ViewController: NSOutlineViewDataSource
                     animeNotesView.string = notes
                 }
             }
-
+            updateTags()
         }
 
     }
@@ -226,6 +238,24 @@ extension ViewController: NSOutlineViewDataSource
     func clearAnimeNote(){
         animeNotesView.string = ""
         animeTagsView.string = ""
+    }
+    
+    func updateTags(){
+        if (selectedAnimeEpisode != nil || selectedAnimeTitle != nil)
+        {
+            if let notes  = userDefaults.object(forKey: selectedAnimeTitle + selectedAnimeEpisode) as? [String:Any]{
+                if let note = notes["notes"] as? String{
+                    animeNotesView.string = note
+                }
+                if let tagData = notes["tags"] as? Data{
+                    if let tagsString = NSKeyedUnarchiver.unarchiveObject(with: tagData) as? NSAttributedString{
+                        animeTagsView.textStorage?.append(tagsString)
+                    }
+                }
+            } else {
+                clearAnimeNote()
+            }
+        }
     }
     
     func updateTextView(){
@@ -251,21 +281,7 @@ extension ViewController: NSOutlineViewDataSource
             animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
             
             // Update the text view notes
-            if (selectedAnimeEpisode != nil || selectedAnimeTitle != nil)
-            {
-                if let notes  = userDefaults.object(forKey: selectedAnimeTitle + selectedAnimeEpisode) as? [String:Any]{
-                    if let note = notes["notes"] as? String{
-                        animeNotesView.string = note
-                    }
-                    if let tagData = notes["tags"] as? Data{
-                        if let tagsString = NSKeyedUnarchiver.unarchiveObject(with: tagData) as? NSAttributedString{
-                            animeTagsView.textStorage?.append(tagsString)
-                        }
-                    }
-                } else {
-                    clearAnimeNote()
-                }
-            }
+            updateTags()
         }
         
     }

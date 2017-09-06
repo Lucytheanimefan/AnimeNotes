@@ -690,11 +690,11 @@
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <customView id="Asq-rb-AT8">
-                    <rect key="frame" x="0.0" y="0.0" width="83" height="31"/>
+                    <rect key="frame" x="0.0" y="0.0" width="53" height="31"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <subviews>
                         <popUpButton verticalHuggingPriority="750" fixedFrame="YES" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Jc-Gf-HIX">
-                            <rect key="frame" x="21" y="3" width="40" height="25"/>
+                            <rect key="frame" x="6" y="3" width="40" height="25"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <popUpButtonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" arrowPosition="noArrow" preferredEdge="maxX" autoenablesItems="NO" altersStateOfSelectedItem="NO" id="HJc-bZ-X7j">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -708,11 +708,11 @@
                     </subviews>
                 </customView>
                 <customView id="dsa-FY-h7n">
-                    <rect key="frame" x="0.0" y="0.0" width="216" height="31"/>
+                    <rect key="frame" x="0.0" y="0.0" width="514" height="31"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <subviews>
                         <searchField wantsLayer="YES" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="71B-EF-teQ">
-                            <rect key="frame" x="7" y="5" width="202" height="22"/>
+                            <rect key="frame" x="299" y="5" width="202" height="22"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search" usesSingleLineMode="YES" bezelStyle="round" id="nBG-5g-gDN">
                                 <font key="font" metaFont="system"/>

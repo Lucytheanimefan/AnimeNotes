@@ -22,10 +22,10 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     let TagSelectorToolbarItemID = "tagSelector"
     let SearchFieldToolbarItemID = "searchField"
     
-    let tagTitles = ["Trash", "Masterpiece", "2Deep4Me", "WTF", "HypeTrain", "Filler"]
+    let tagTitles = ["Trash", "ART", "2Deep4Me", "WTF", "HypeTrain", "Filler"]
     
     
-    let tagToImageDict = ["Trash":#imageLiteral(resourceName: "Trash")]
+    let tagToImageDict = ["Trash":#imageLiteral(resourceName: "Trash"), "Art":#imageLiteral(resourceName: "Paint"), "WTF":#imageLiteral(resourceName: "WTF"), "RIP":#imageLiteral(resourceName: "RIP")]
     
     let DefaultFontSize : Int   = 14
     
@@ -45,6 +45,7 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         item?.image = NSImage(named: "TagIcon")
         
         self.tagSelectorButton.addItems(withTitles: Array(tagToImageDict.keys))
+        
     }
     
     
