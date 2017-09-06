@@ -9,7 +9,7 @@
 import Cocoa
 
 class WindowController: NSWindowController, NSToolbarDelegate {
-
+    
     @IBOutlet weak var toolBar: NSToolbar!
     
     @IBOutlet var tagView: NSView!
@@ -31,7 +31,7 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     
     override func windowDidLoad() {
         super.windowDidLoad()
-    
+        
         self.toolBar.allowsUserCustomization = true
         self.toolBar.autosavesConfiguration = true
         self.toolBar.displayMode = .iconOnly
@@ -48,14 +48,16 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     }
     
     
-    @IBAction func addTag(_ sender: NSButton) {       
+    @IBAction func addTag(_ sender: NSButton) {
         let tagTitle = tagSelectorButton.titleOfSelectedItem
         if let vc = self.window?.contentViewController as? ViewController{
             let attachmentCell = NSTextAttachmentCell(imageCell: tagToImageDict[tagTitle!])
             let attachment = NSTextAttachment()
             attachment.attachmentCell = attachmentCell
             let attributedString = NSAttributedString(attachment: attachment)
+            let tagString = NSAttributedString(string: tagTitle!, attributes: [NSForegroundColorAttributeName:NSColor.clear, NSFontAttributeName:NSFont.systemFont(ofSize: 1)])
             vc.animeTagsView.textStorage?.append(attributedString)
+            vc.animeTagsView.textStorage?.append(tagString)
         }
     }
     
@@ -71,8 +73,7 @@ class WindowController: NSWindowController, NSToolbarDelegate {
         
         let entries = UserDefaults.standard.dictionaryRepresentation()
         
-        
-        var animeEntries:[Any] = entries.filter { (tuple: (key: String, value: Any)) -> Bool in
+        let animeEntries:[Any] = entries.filter { (tuple: (key: String, value: Any)) -> Bool in
             if let val = tuple.value as? [String:Any]
             {
                 if let type = val["type"] as? String{
@@ -82,7 +83,6 @@ class WindowController: NSWindowController, NSToolbarDelegate {
             return false
         }
         
-        print(animeEntries)
         // Just search for tags for now
         let filteredEntries = animeEntries.filter { (object) -> Bool in
             //print(object)
@@ -90,8 +90,12 @@ class WindowController: NSWindowController, NSToolbarDelegate {
                 //print(item)
                 if let value = item.1 as? [String:Any]{
                     //print(value)
-                    if let tags = value["tags"] as? String{
-                        if (tags.contains(searchString)){ return true }
+                    if let tagData = value["tags"] as? Data{
+                        if let tags = NSKeyedUnarchiver.unarchiveObject(with: tagData) as? NSAttributedString{
+                            //print(tags)
+                            if (tags.string.containsIgnoringCase(find:searchString)){ return true }
+                            
+                        }
                     }
                     if let notes = value["notes"] as? String{
                         if (notes.contains(searchString)){ return true }
@@ -101,8 +105,6 @@ class WindowController: NSWindowController, NSToolbarDelegate {
             return false
         }
         
-        print("Filtered entries!")
-        print(filteredEntries)
         if (filteredEntries.count>0){
             vc.filterMode = true
             vc.filteredEntries = filteredEntries
@@ -112,7 +114,7 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     
     
     // MARK: ToolbarDelegate
-     func customToolbarItem(itemForItemIdentifier itemIdentifier: String, label: String, paletteLabel: String, toolTip: String, target: AnyObject, itemContent: AnyObject, action: Selector?, menu: NSMenu?) -> NSToolbarItem? {
+    func customToolbarItem(itemForItemIdentifier itemIdentifier: String, label: String, paletteLabel: String, toolTip: String, target: AnyObject, itemContent: AnyObject, action: Selector?, menu: NSMenu?) -> NSToolbarItem? {
         
         let toolbarItem = NSToolbarItem(itemIdentifier: itemIdentifier)
         
@@ -176,3 +178,13 @@ class WindowController: NSWindowController, NSToolbarDelegate {
     
 }
 
+extension String {
+    
+    func contains(find: String) -> Bool{
+        return self.range(of: find) != nil
+    }
+    
+    func containsIgnoringCase(find: String) -> Bool{
+        return self.range(of: find, options: .caseInsensitive) != nil
+    }
+}

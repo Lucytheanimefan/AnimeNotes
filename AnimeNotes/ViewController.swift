@@ -83,7 +83,7 @@ extension ViewController: NSOutlineViewDelegate
             if (filterMode)
             {
                 if let entry = item as? (Any, Any){
-                    print(entry)
+                    //print(entry)
                     if let title = entry.0 as? String{
                         formatTitleEpisodeFromFilteredEntry(title: title)
                         cellView = customCellView(title: selectedAnimeTitle, subtitle: "Episode: " + selectedAnimeEpisode)
@@ -223,7 +223,13 @@ extension ViewController: NSOutlineViewDataSource
 
     }
     
+    func clearAnimeNote(){
+        animeNotesView.string = ""
+        animeTagsView.string = ""
+    }
+    
     func updateTextView(){
+        clearAnimeNote()
         if (outlineView.selectedRow < 0)
         {
             return
@@ -233,18 +239,16 @@ extension ViewController: NSOutlineViewDataSource
             if (Int((item.textField?.stringValue)!) == nil)
             {
                 selectedAnimeTitle = (item.textField?.stringValue)!
-                animeTitle.stringValue = selectedAnimeTitle
                 selectedAnimeEpisode = "-"
-                animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
                 
             } else {
                 if let parent = outlineView.parent(forItem: outlineItem) as? NSDictionary{
                     selectedAnimeTitle = parent["title"] as! String
                 }
                 selectedAnimeEpisode = (item.textField?.stringValue)!
-                animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
-                animeTitle.stringValue = selectedAnimeTitle
             }
+            animeTitle.stringValue = selectedAnimeTitle
+            animeEpisode.stringValue = "Episode: " + selectedAnimeEpisode
             
             // Update the text view notes
             if (selectedAnimeEpisode != nil || selectedAnimeTitle != nil)
@@ -259,8 +263,7 @@ extension ViewController: NSOutlineViewDataSource
                         }
                     }
                 } else {
-                    animeNotesView.string = ""
-                    animeTagsView.string = ""
+                    clearAnimeNote()
                 }
             }
         }
